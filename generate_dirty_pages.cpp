@@ -27,8 +27,8 @@ void *generate_dirty_pages(void *dpi)
 	for (int i = 0; i < dpinfo->range; i++)
 	{
 		//printf("iteration: %d wr_prt: %p\n", i, wr_ptr);
-		*wr_ptr = 0;
-		wr_ptr += 4*1024; // int is 4 bytes, so jumping 4*1024 = 4K bytes
+		*wr_ptr = 0x98;
+		wr_ptr += 4*1024; // char is 1 bytes, so jumping 4*1024 = 4K bytes to get to the next memory page
 		//cout << "usleep " << usleep(sleep_between_writes) << endl;
 		//usleep(sleep_between_writes);
 		nanosleep(&dpinfo->sleep_time, NULL);
@@ -64,20 +64,29 @@ int main(int argc, char *argv[])
 	//cout << "Info: sleep time (sec): " << sleep_time.tv_sec << endl;
 	//cout << "Info: sleep time (nano sec): " << sleep_time.tv_nsec << endl;
 
+	cout << "Info: Allocating " << dirty_rate * 4 *1024 << " Bytes" << endl;
+	void *mem_ptr;
+	mem_ptr = valloc(dirty_rate * 4 * 1024); // each memory page is of 4K bytes
+	if (mem_ptr == 0)
+	{
+		cout << "Error: Out of memory" << endl;
+		return 1;
+	}
+
 	while(true)
 	{
-		cout << "Info: Allocating " << dirty_rate * 4 *1024 << " Bytes" << endl;
-		void *mem_ptr;
-		mem_ptr = malloc(dirty_rate * 4 * 1024); // each memory page is of 4K bytes
-		if (mem_ptr == 0)
-		{
-			cout << "Error: Out of memory" << endl;
-			return 1;
-		}
-
 		// memory allocation successful, now generate dirty pages
 		cout << "Info: Generating " << dirty_rate << " dirty pages per second" << endl;
 
+		/*//*/
+		struct dirty_page_info dpi0;
+		dpi0.mem_ptr = mem_ptr;
+		dpi0.range = dirty_rate;
+		dpi0.sleep_time = sleep_time;
+		generate_dirty_pages(&dpi0);
+		//*/
+
+		/**/
 		pthread_t drt_thrd1, drt_thrd2, drt_thrd3, drt_thrd4;
 
 		struct dirty_page_info dpi1, dpi2, dpi3, dpi4;
@@ -91,22 +100,27 @@ int main(int argc, char *argv[])
 		dpi1.sleep_time = dpi2.sleep_time = dpi3.sleep_time = dpi4.sleep_time = sleep_time;
 
 		pthread_create(&drt_thrd1, NULL, generate_dirty_pages, (void *)&dpi1);
+		usleep(10);
 		pthread_create(&drt_thrd2, NULL, generate_dirty_pages, (void *)&dpi2);
+		usleep(10);
 		pthread_create(&drt_thrd3, NULL, generate_dirty_pages, (void *)&dpi3);
+		usleep(10);
 		pthread_create(&drt_thrd4, NULL, generate_dirty_pages, (void *)&dpi4);
 
 		pthread_join(drt_thrd1, NULL);
 		pthread_join(drt_thrd2, NULL);
 		pthread_join(drt_thrd3, NULL);
 		pthread_join(drt_thrd4, NULL);
-
-		cout << "Info: Freeing memory" << endl;
-		// free the allocated memory
-		free(mem_ptr);
+		//*/
 
 		// just for test purpose
 		//break;
 	}
+
+	cout << "Info: Freeing memory" << endl;
+	// free the allocated memory
+	free(mem_ptr);
+
 	return 0;
 }
 
