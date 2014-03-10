@@ -27,7 +27,10 @@ void *generate_dirty_pages(void *dpi)
 	for (int i = 0; i < dpinfo->range; i++)
 	{
 		//printf("iteration: %d wr_prt: %p\n", i, wr_ptr);
-		*wr_ptr = 0x98;
+		for (int j = 0; j < 4*1024; j++)
+		{
+			*(wr_ptr + j) = 0x98;
+		}
 		wr_ptr += 4*1024; // char is 1 bytes, so jumping 4*1024 = 4K bytes to get to the next memory page
 		//cout << "usleep " << usleep(sleep_between_writes) << endl;
 		//usleep(sleep_between_writes);
