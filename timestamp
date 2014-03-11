@@ -1,0 +1,13 @@
+#!/bin/bash
+
+while true
+do
+	#start=$(($(date +%s%N)/1000)) # current time in microsec
+	#end=$(($(date +%s%N)/1000))
+	#diff=$((end-start))
+	#if [[ $diff -gt 3000  ]]; then
+	#	echo $diff # this is also in microsec
+	#fi
+	current=$(($(date +%s%N)/1000000)) # current time in ms
+	echo $current
+done
