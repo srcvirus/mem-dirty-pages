@@ -34,7 +34,8 @@ void *generate_dirty_pages(void *dpi)
 			*(wr_ptr + j) = rand() % 100;
 		}
 		*/
-		*wr_ptr = rand() % 100;
+		//wr_ptr = rand() % 100;
+		memset(wr_ptr, rand()%100, 4*1024);
 		wr_ptr += 4*1024; // char is 1 bytes, so jumping 4*1024 = 4K bytes to get to the next memory page
 		//cout << "usleep " << usleep(sleep_between_writes) << endl;
 		//usleep(sleep_between_writes);
@@ -91,10 +92,10 @@ int main(int argc, char *argv[])
 	//cout << "Info: sleep time (nano sec): " << sleep_time.tv_nsec << endl;
 
 	void *mem_ptr, *mem_ptr2;
-	mem_ptr = allocate_memory(mem_ptr, dirty_rate);
 
 	while(true)
 	{
+		mem_ptr = allocate_memory(mem_ptr, dirty_rate);
 		// memory allocation successful, now generate dirty pages
 		cout << "Info: Generating " << dirty_rate << " dirty pages per second" << endl;
 		//cout << "memset ++" << endl;
@@ -139,11 +140,11 @@ int main(int argc, char *argv[])
 		//mem_ptr2 = mem_ptr;
 		//free_memory(mem_ptr);
 		//allocate_memory(mem_ptr, dirty_rate);
+		free_memory(mem_ptr);
 		// just for test purpose
 		//break;
 	}
 
-	free_memory(mem_ptr);
 	return 0;
 }
 
