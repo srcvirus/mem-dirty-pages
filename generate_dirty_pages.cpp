@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstdio>
+#include <cstring>
 
 #include <unistd.h>
 #include <time.h>
@@ -27,15 +28,37 @@ void *generate_dirty_pages(void *dpi)
 	for (int i = 0; i < dpinfo->range; i++)
 	{
 		//printf("iteration: %d wr_prt: %p\n", i, wr_ptr);
+		/*
 		for (int j = 0; j < 4*1024; j++)
 		{
 			*(wr_ptr + j) = rand() % 100;
 		}
+		*/
+		*wr_ptr = rand() % 100;
 		wr_ptr += 4*1024; // char is 1 bytes, so jumping 4*1024 = 4K bytes to get to the next memory page
 		//cout << "usleep " << usleep(sleep_between_writes) << endl;
 		//usleep(sleep_between_writes);
 		nanosleep(&dpinfo->sleep_time, NULL);
 	}
+}
+
+void *allocate_memory(void *mem_ptr, long dirty_rate)
+{
+	cout << "Info: Allocating " << dirty_rate * 4 *1024 << " Bytes" << endl;
+	mem_ptr = valloc(dirty_rate * 4 * 1024); // each memory page is of 4K bytes
+	if (mem_ptr == 0)
+	{
+		cout << "Error: Out of memory" << endl;
+		exit(1);
+	}
+	return mem_ptr;
+}
+
+void free_memory(void *mem_ptr)
+{
+	cout << "Info: Freeing memory" << endl;
+	// free the allocated memory
+	free(mem_ptr);
 }
 
 
@@ -67,29 +90,26 @@ int main(int argc, char *argv[])
 	//cout << "Info: sleep time (sec): " << sleep_time.tv_sec << endl;
 	//cout << "Info: sleep time (nano sec): " << sleep_time.tv_nsec << endl;
 
-	cout << "Info: Allocating " << dirty_rate * 4 *1024 << " Bytes" << endl;
-	void *mem_ptr;
-	mem_ptr = valloc(dirty_rate * 4 * 1024); // each memory page is of 4K bytes
-	if (mem_ptr == 0)
-	{
-		cout << "Error: Out of memory" << endl;
-		return 1;
-	}
+	void *mem_ptr, *mem_ptr2;
+	mem_ptr = allocate_memory(mem_ptr, dirty_rate);
 
 	while(true)
 	{
 		// memory allocation successful, now generate dirty pages
 		cout << "Info: Generating " << dirty_rate << " dirty pages per second" << endl;
-
-		/*//*/
+		//cout << "memset ++" << endl;
+		//memset(mem_ptr, rand()%100, dirty_rate*4*1024);
+		//cout << "memset --" << endl;
+		//usleep(1000);
+		/*
 		struct dirty_page_info dpi0;
 		dpi0.mem_ptr = mem_ptr;
 		dpi0.range = dirty_rate;
 		dpi0.sleep_time = sleep_time;
 		generate_dirty_pages(&dpi0);
-		//*/
+		*/
 
-		/**/
+
 		pthread_t drt_thrd1, drt_thrd2, drt_thrd3, drt_thrd4;
 
 		struct dirty_page_info dpi1, dpi2, dpi3, dpi4;
@@ -114,16 +134,16 @@ int main(int argc, char *argv[])
 		pthread_join(drt_thrd2, NULL);
 		pthread_join(drt_thrd3, NULL);
 		pthread_join(drt_thrd4, NULL);
-		//*/
 
+
+		//mem_ptr2 = mem_ptr;
+		//free_memory(mem_ptr);
+		//allocate_memory(mem_ptr, dirty_rate);
 		// just for test purpose
 		//break;
 	}
 
-	cout << "Info: Freeing memory" << endl;
-	// free the allocated memory
-	free(mem_ptr);
-
+	free_memory(mem_ptr);
 	return 0;
 }
 
