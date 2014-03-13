@@ -15,7 +15,7 @@ downtime = 0
 for line in ts_file.readlines():
 	ts2 = line.strip()
 	diff = int(ts2) - int(ts1)
-	if diff > 500:
+	if diff > 30:
 		downtime += diff 
 	ts1 = ts2
 ts_file.close()
