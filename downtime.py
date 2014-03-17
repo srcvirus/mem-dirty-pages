@@ -8,7 +8,7 @@ if (len(sys.argv) < 2):
 	exit(1)
 
 ts_file = open(sys.argv[1], 'r')
-down_threshold = 30
+down_threshold = 50
 try:
 	down_threshold = int(sys.argv[2])
 except:
