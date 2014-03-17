@@ -9,5 +9,5 @@ do
 	#	echo $diff # this is also in microsec
 	#fi
 	current=$(($(date +%s%N)/1000000)) # current time in ms
-	echo $current
+	echo $current &> $1
 done
