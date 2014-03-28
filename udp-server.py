@@ -22,6 +22,10 @@ while 1:
 	diff = current_timestamp - last_timestamp
 	last_timestamp = current_timestamp
 
-	if diff > max_diff:
-		max_diff = diff
-		print 'Max Diff: ', str(max_diff), ' ms'
+	if data = 'heartbeat':
+		if diff > max_diff:
+			max_diff = diff
+			print 'Max Diff: ', str(max_diff), ' ms'
+	elif data = 'clear':
+		print max_diff
+		max_diff = 0
