@@ -9,7 +9,6 @@ try:
 except socket.error, msg:
         print 'Failed to create socket. Error code: ', str(msg[0]), ' Message: ', msg[1]
 
-while 1:
-        s.sendto('clear', (host, port))
-	reply, addr = s.rcvdfrom(1024)
-	print reply
+s.sendto('clear', (host, port))
+reply, addr = s.recvfrom(1024)
+print reply
