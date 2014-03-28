@@ -22,10 +22,10 @@ while 1:
 	diff = current_timestamp - last_timestamp
 	last_timestamp = current_timestamp
 
-	if data = 'heartbeat':
+	if data == 'heartbeat':
 		if diff > max_diff:
 			max_diff = diff
-			print 'Max Diff: ', str(max_diff), ' ms'
-	elif data = 'clear':
-		print max_diff
+			print 'Max Diff: ', str(max_diff/1000.0), ' s'
+	elif data == 'clear':
+		s.sendto(str(max_diff/1000.0), addr)
 		max_diff = 0
