@@ -24,5 +24,4 @@ while 1:
 
 	if diff > max_diff:
 		max_diff = diff
-
-	print 'Max Diff: ', str(max_diff), ' ms'
+		print 'Max Diff: ', str(max_diff), ' ms'
